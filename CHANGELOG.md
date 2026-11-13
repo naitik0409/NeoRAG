@@ -6,6 +6,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 ## [0.2.0] - 2026-11-13
 
 ### Added
+- **PyPI package** (`pip install neorag`) with `neorag` console command.
+- Zero-config experience: with only `GROQ_API_KEY` set, NeoRAG runs the Groq free tier with no config file; data dirs land in the working directory.
+- `NEORAG_LLM_BACKEND` env override for the LLM backend.
 - Fast hybrid mode (default): parallel local-docs + web retrieval, single LLM call per question.
 - Agent mode (`--agent`, `/mode`): ReAct JSON loop with `search` + `web_search` tools, step trace via `/steps`.
 - Free web research module ("own Tavily"): DuckDuckGo HTML search (SearxNG fallback), concurrent page scraping, 7-day cache, `research` CLI command that saves pages to the corpus and ingests them.

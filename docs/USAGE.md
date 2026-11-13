@@ -1,12 +1,35 @@
 # Usage
 
-All commands run from the project root:
+## Two ways to run
 
-```powershell
+**Installed from PyPI** (`pip install neorag`):
+
+```bash
+neorag <command> [options]
+```
+
+**From a source checkout:**
+
+```bash
 python -m neorag.cli <command> [options]
 ```
 
-Global option: `--config <path>` to use a different YAML config (default: `config/neorag.yaml`).
+Both are identical. Global option: `--config <path>` to use a different YAML config.
+
+## Zero-config quickstart
+
+No config file is needed. NeoRAG looks for `config/neorag.yaml` in the current directory (or `~/.neorag/config.yaml`); if neither exists it runs on built-in defaults, and if `GROQ_API_KEY` is set it automatically uses the Groq free tier.
+
+| Variable | Purpose |
+|---|---|
+| `GROQ_API_KEY` | set this alone → Groq + `openai/gpt-oss-120b`, zero config |
+| `NEORAG_LLM_BACKEND` | `api` or `local` (force local even with a Groq key present) |
+| `NEORAG_LLM_API_BASE` | override the OpenAI-compatible endpoint |
+| `NEORAG_LLM_MODEL` | override the model name sent to the endpoint |
+| `NEORAG_LLM_API_KEY` | generic key name for non-Groq providers |
+| `HF_TOKEN` | only for gated HuggingFace model downloads |
+
+Data (`data/corpus/`, `storage/chroma/`, `storage/web_cache/`) is created relative to the directory you run from — run from your project folder to keep things tidy.
 
 ## Commands
 
