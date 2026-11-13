@@ -9,7 +9,8 @@ description = "NeoRAG - a self-hosted RAG agent you fine-tune from a weak open-s
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "NeoRAG" }]
+authors = [{ name = "Naitik" }]
+urls = { Homepage = "https://github.com/naitik0409/NeoRAG", Documentation = "https://github.com/naitik0409/NeoRAG/tree/main/docs", Issues = "https://github.com/naitik0409/NeoRAG/issues" }
 dependencies = [
     "torch>=2.1",
     "transformers>=5.0",
