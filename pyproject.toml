@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "neorag"
-version = "0.2.0"
+version = "0.1.0"
 description = "A self-hosted RAG agent you fine-tune from a weak open-source model into a retrieval-grounded specialist - free web research, local vector store, model-agnostic LLM"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -5,7 +5,7 @@ Known issues and their resolutions - all verified on this project.
 ## LLM / API
 
 **`LLM API error 403: error code: 1010`**
-Cloudflare blocked raw `urllib` requests to Groq. Fixed in 0.2.0 (official OpenAI SDK with browser-UA fallback). If you still see it, update `src/neorag/llm/openai_compat.py` is present - you are on an old checkout.
+Cloudflare blocked raw `urllib` requests to Groq. Fixed in 0.1.0 (official OpenAI SDK with browser-UA fallback). If you still see it, update `src/neorag/llm/openai_compat.py` is present - you are on an old checkout.
 
 **`The model <name> does not exist or you do not have access` (404)**
 Groq rotates free models. List live models:
@@ -26,7 +26,7 @@ Free-tier limits. Wait, or switch `api_model` to `openai/gpt-oss-20b`.
 ## Chat UI
 
 **Unicode garbling (`You ⯛`, `�`) or `UnicodeEncodeError: 'charmap'`**
-Fixed in 0.2.0: stdout/stderr are reconfigured to UTF-8 in the CLI. Use Windows Terminal for best rendering.
+Fixed in 0.1.0: stdout/stderr are reconfigured to UTF-8 in the CLI. Use Windows Terminal for best rendering.
 
 **No logs anymore?**
 Intentional - the chat UI silences `neorag` logging to ERROR so answers stay clean. Run any other command (e.g. `ingest`) for full logs.
@@ -45,7 +45,7 @@ Some sites block bots or render via JavaScript. NeoRAG falls back to the search 
 ## Local ML
 
 **`ImportError: cannot import name 'AutoModel'`**
-A thread race in transformers lazy imports when two threads load models simultaneously. Fixed in 0.2.0 with load locks in the embedder and reranker.
+A thread race in transformers lazy imports when two threads load models simultaneously. Fixed in 0.1.0 with load locks in the embedder and reranker.
 
 **HF symlink warning on Windows**
 Harmless (cache uses a slower path). Silence with `$env:HF_HUB_DISABLE_SYMLINKS_WARNING="1"` or enable Windows Developer Mode.
