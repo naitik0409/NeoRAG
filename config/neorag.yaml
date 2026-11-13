@@ -1,0 +1,78 @@
+# NeoRAG configuration
+# Fully free by default: local LLM + local embeddings + local vector store.
+# Information gathering (web search + scraping) is always free - no API keys.
+# The LLM slot is model-agnostic: point it at ANY model - local or cloud,
+# free or paid - and everything else keeps working unchanged.
+
+llm:
+  # backend: local  -> any HuggingFace causal LM (transformers), incl. your fine-tuned checkpoint
+  # backend: api    -> ANY OpenAI-compatible endpoint:
+  #                    Groq (free tier):  https://api.groq.com/openai/v1        model: llama-3.1-8b-instant
+  #                    OpenRouter free:   https://openrouter.ai/api/v1          model: meta-llama/llama-3.1-8b-instruct:free
+  #                    Ollama (local):    http://localhost:11434/v1             model: llama3.1
+  #                    LM Studio (local): http://localhost:1234/v1
+  #                    vLLM (self-host):  http://localhost:8000/v1
+  #                    paid clouds also work the same way (OpenAI, Gemini, DeepSeek, ...)
+  backend: api
+  api_base: https://api.groq.com/openai/v1
+  api_model: openai/gpt-oss-120b
+  api_key_env: GROQ_API_KEY
+  # Free Groq model options (verified live): openai/gpt-oss-120b, openai/gpt-oss-20b, qwen/qwen3.8-27b
+  # Put your key in .env:  GROQ_API_KEY=gsk_...
+  # For a local model instead, use:
+  #   backend: local
+  #   model_id: Qwen/Qwen2.5-0.5B-Instruct
+  model_id: Qwen/Qwen2.5-0.5B-Instruct
+  # After fine-tuning, switch to your trained model:
+  #   model_id: checkpoints/neorag-sft-merged
+  # or use a free API: set backend: api and these env vars:
+  #   NEORAG_LLM_API_BASE, NEORAG_LLM_API_KEY, NEORAG_LLM_MODEL
+  max_new_tokens: 2048
+  reasoning_effort: low
+  temperature: 0.7
+
+embeddings:
+  # free, local, runs on CPU: MiniLM or upgrade to bge-small-en-v1.5 (still free)
+  model_id: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 32
+
+store:
+  persist_dir: storage/chroma
+  collection: neorag
+
+ingest:
+  source_dir: data/corpus
+  chunk_size: 512
+  chunk_overlap: 64
+
+retrieval:
+  top_k: 8
+  final_k: 4
+  reranker: none
+  # reranker: cross-encoder  (uses cross-encoder/ms-marco-MiniLM-L-6-v2, free + local)
+
+agent:
+  max_steps: 5
+
+web:
+  # Your own free "Tavily": DuckDuckGo search + page scraping. No key, no credits.
+  enabled: true
+  max_results: 8
+  scrape_pages: 3
+  max_chars_per_page: 8000
+  top_k: 6
+  timeout: 20
+  delay: 1.0
+  cache_dir: storage/web_cache
+  # freshness: auto -> bypass cache for time-sensitive queries (prices, news, today...)
+  #                 always -> never use cache (freshest, slower)   cached -> always use cache
+  freshness: auto
+  searx_instances: []
+
+training:
+  base_model_id: Qwen/Qwen2.5-0.5B-Instruct
+  output_dir: checkpoints/neorag-sft
+  dataset_path: data/finetune/sft.jsonl
+  lora_r: 16
+  epochs: 3
+  learning_rate: 2.0e-4

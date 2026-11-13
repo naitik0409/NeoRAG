@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neorag"
+version = "0.1.0"
+description = "NeoRAG - a self-hosted RAG agent you fine-tune from a weak open-source model into a retrieval-grounded specialist"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "NeoRAG" }]
+dependencies = [
+    "torch>=2.1",
+    "transformers>=5.0",
+    "accelerate>=0.30",
+    "peft>=0.11",
+    "datasets>=2.19",
+    "chromadb>=0.5",
+    "pyyaml>=6.0",
+    "pypdf>=4.0",
+    "python-docx>=1.1",
+    "beautifulsoup4>=4.12",
+    "rich>=13.0",
+    "tqdm>=4.66",
+    "openai>=1.40",
+]
+
+[project.optional-dependencies]
+train = [
+    "trl>=0.9",
+    "bitsandbytes>=0.43; platform_system == 'Linux' or platform_system == 'Windows'",
+    "sentence-transformers>=2.7",
+    "faiss-cpu>=1.8",
+]
+eval = ["ragas>=0.1"]
+dev = ["pytest>=8.0", "ruff>=0.4"]
+
+[project.scripts]
+neorag = "neorag.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
