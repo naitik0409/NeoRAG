@@ -7,7 +7,26 @@ from typing import Any
 
 import yaml
 
+DEFAULT_API_BASE = "https://api.groq.com/openai/v1"
+DEFAULT_API_MODEL = "openai/gpt-oss-120b"
+DEFAULT_API_KEY_ENV = "GROQ_API_KEY"
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _find_config(explicit: str | Path | None) -> Path | None:
+    if explicit:
+        p = Path(explicit)
+        if not p.exists():
+            raise FileNotFoundError(f"Config file not found: {p}")
+        return p.resolve()
+    for candidate in (
+        Path.cwd() / "config" / "neorag.yaml",
+        Path.home() / ".neorag" / "config.yaml",
+    ):
+        if candidate.exists():
+            return candidate
+    return None
 
 
 def _auto_device() -> str:
@@ -167,13 +186,15 @@ def _merge(dataclass_obj: Any, overrides: dict[str, Any]) -> Any:
 
 
 def load_config(path: str | Path | None = None) -> NeoRAGConfig:
-    cfg_path = Path(path) if path else PROJECT_ROOT / "config" / "neorag.yaml"
+    cfg_path = _find_config(path)
     raw: dict[str, Any] = {}
-    if cfg_path.exists():
+    if cfg_path:
         with open(cfg_path, "r", encoding="utf-8") as fh:
             raw = yaml.safe_load(fh) or {}
-
-    cfg = NeoRAGConfig(root=cfg_path.resolve().parents[1].parent if cfg_path.exists() else PROJECT_ROOT)
+        root = cfg_path.parent.parent
+    else:
+        root = Path.cwd()
+    cfg = NeoRAGConfig(root=root)
 
     sections = {
         "llm": LLMConfig,
@@ -191,9 +212,14 @@ def load_config(path: str | Path | None = None) -> NeoRAGConfig:
         if name == "llm":
             d = asdict(section)
             _resolve_auto(d, "device", "dtype", "quantize_4bit")
-            d["api_base"] = os.environ.get("NEORAG_LLM_API_BASE", d["api_base"])
-            if os.environ.get("NEORAG_LLM_MODEL"):
-                d["api_model"] = os.environ["NEORAG_LLM_MODEL"]
+            d["backend"] = os.environ.get("NEORAG_LLM_BACKEND", d["backend"])
+            if not cfg_path and d["backend"] == "local" and os.environ.get(DEFAULT_API_KEY_ENV):
+                d["backend"] = "api"
+            if d["backend"] == "api":
+                d["api_base"] = os.environ.get("NEORAG_LLM_API_BASE", d["api_base"] or DEFAULT_API_BASE)
+                d["api_model"] = os.environ.get("NEORAG_LLM_MODEL", d["api_model"] or DEFAULT_API_MODEL)
+                if d["api_key_env"] == "NEORAG_LLM_API_KEY" and os.environ.get(DEFAULT_API_KEY_ENV):
+                    d["api_key_env"] = DEFAULT_API_KEY_ENV
             section = LLMConfig(**d)
         if name == "training":
             d = asdict(section)

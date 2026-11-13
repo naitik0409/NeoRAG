@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 
 from neorag.config import load_config, PROJECT_ROOT
 from neorag.env import load_env_file
@@ -251,7 +252,8 @@ def main(argv: list[str] | None = None) -> int:
             stream.reconfigure(encoding="utf-8", errors="replace")
         except Exception:
             pass
-    load_env_file(PROJECT_ROOT / ".env")
+    if not load_env_file(Path.cwd() / ".env"):
+        load_env_file(PROJECT_ROOT / ".env")
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
